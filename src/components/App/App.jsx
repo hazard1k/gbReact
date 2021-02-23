@@ -1,10 +1,15 @@
+import {Component} from 'react'
 import {Messages} from '../Messages'
 
-const App = () => {
-    return (
-    <div id="test-id"><h2>Hello</h2>
-        <Messages messages={['1','2','3']} />
-    </div>);
-};
+
+class App extends Component{
+
+    render(){
+        return (
+            <div id="test-id">
+             <Messages/>
+            </div>);
+    }
+}
 
 export {App};
