@@ -10,7 +10,7 @@ module.exports = {
     output: {
         path: path.resolve(__dirname, "static", "build"),
         filename: 'bundle.js',
-        publicPath: '/static/build/'
+        //publicPath: '/static/build/'
     },
     module: {
         rules: [{
@@ -23,12 +23,22 @@ module.exports = {
                     '@babel/env', ['@babel/preset-react', {
                         runtime: 'automatic'
                     }]
-                ]
+                ],
+                plugins: [
+                    [
+                        '@babel/plugin-proposal-class-properties',
+                        { loose: true },
+                    ]
+                ],
             }
         }]
     },
-    plugins: [new HtmlWebpackPlugin()],
+    plugins: [new HtmlWebpackPlugin({
+        title: 'React App',
+        template: 'index.html'
+    })],
     resolve: {
         extensions: ['.js', '.jsx'],
-    }
+    },
+    devtool: 'inline-source-map',
 };

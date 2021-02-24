@@ -1,58 +1,45 @@
 
-import React from 'react'
-
-class Message extends React.Component {
-    constructor(props) {
-      super(props);
-    }
+import {Component, Fragment} from 'react'
+import PropTypes from 'prop-types'
+class Message extends Component {
     render() {
-        return <div>{this.props.text}</div>
+        const {text, author} = this.props
+        return <div>{text} [{author}]</div>
     }
 };
 
-class Messages extends React.Component {
-    constructor(props) {
-      super(props);
-      const {messages = []} = props
-      this.state = {messages: messages, message: ''};
-      this.handleChange = this.handleChange.bind(this);
-      this.handleSubmit = this.handleSubmit.bind(this);
-    }
-    Message(props) {
-            return <div>{props.text}</div>
-        };
+class Messages extends Component {
 
-    handleChange(event) {
-        this.setState(state => ({
-            message: event.target.value
-        }));
+    state = {
+        messages: [{text:'Hello world',author:'auto generated'}, {text:'Hello', author:'auto generated'}]
     }
-  
-    handleSubmit(event) {
-        event.preventDefault();
-        this.state.messages.push(this.state.message)
-        this.setState(state => ({
-            messages: state.messages,
-            message: ''
-        }));
+
+    addMessage = () => {
+        this.setState({messages: [...this.state.messages, {text:'Yahoo!', author:'user'}]});
     }
-  
+    
+    componentDidUpdate(){
+        console.log("componentDidUpdate");
+        if (this.state.messages.length % 2 === 1){
+            setTimeout(()=>{
+                this.setState({messages: [...this.state.messages, {text: 'From the robot', author:'robot'}]})
+            }, 1000)
+        }
+    }
+
     render() {
+        console.log("render", this.state)
+        const { messages = [] } = this.state;
       return (
-        <div>
-            <form onSubmit={this.handleSubmit}>
-            <label>
-                Имя:
-                <input type="text" value={this.state.message} onChange={this.handleChange} />
-            </label>
-            <input type="submit" value="Добавить" />
-        </form>
+        <Fragment>
             <div className="messages">
-                 {this.state.messages.map((item, index)=>(
-                     <Message key={index} text={item}/>
-             ))}
+                 {messages.map((item, index)=>(
+                     <Message key={index} text={item.text} author={item.author}/>
+                ))}
              </div>
-        </div>
+
+             <button onClick={this.addMessage}>Send Message</button> 
+        </Fragment>
       );
     }
   }
