@@ -1,11 +1,9 @@
 
 import {Component, Fragment} from 'react'
-import PropTypes from 'prop-types'
-class Message extends Component {
-    render() {
-        const {text, author} = this.props
-        return <div>{text} [{author}]</div>
-    }
+
+function Message(props) {
+    const {text, author} = props;
+    return <div>{text} [{author}]</div>
 };
 
 class Messages extends Component {
@@ -34,7 +32,7 @@ class Messages extends Component {
         <Fragment>
             <div className="messages">
                  {messages.map((item, index)=>(
-                     <Message key={index} text={item.text} author={item.author}/>
+                     <Message key={index} {...item}/>
                 ))}
              </div>
 
