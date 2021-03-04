@@ -1,6 +1,7 @@
 const path = require("path");
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
     mode: 'development',
@@ -31,12 +32,17 @@ module.exports = {
                     ]
                 ],
             }
-        }]
+        }, {
+            test: /\.css$/,
+            use: [MiniCssExtractPlugin.loader, 'css-loader']
+        }, ]
     },
     plugins: [new HtmlWebpackPlugin({
-        title: 'React App',
-        template: 'index.html'
-    })],
+            title: 'React App',
+            template: 'index.html'
+        }),
+        new MiniCssExtractPlugin()
+    ],
     resolve: {
         extensions: ['.js', '.jsx'],
     },

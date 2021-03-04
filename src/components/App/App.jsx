@@ -1,15 +1,10 @@
-import {Component} from 'react'
-import {Messages} from '../Messages'
-
-
-class App extends Component{
-
-    render(){
-        return (
-            <div id="test-id">
-             <Messages/>
-            </div>);
-    }
+import {Layout} from '../Layout'
+function App(){
+    return (
+        <div id="test-id">
+            <Layout/>
+        </div>
+    );
 }
 
 export {App};
