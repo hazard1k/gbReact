@@ -13,7 +13,7 @@
             <Header></Header>
           </Grid>
           <Grid item xs={2}>
-            <ChatList></ChatList>
+            <ChatList />
           </Grid>
           <Grid item>
           <Messages></Messages>

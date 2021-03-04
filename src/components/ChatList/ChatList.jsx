@@ -1,44 +1,33 @@
 
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import Divider from '@material-ui/core/Divider';
+import {Component, Fragment} from 'react'
+import {List, ListItem, ListItemIcon, ListItemText} from '@material-ui/core';
 import InboxIcon from '@material-ui/icons/Inbox';
-import DraftsIcon from '@material-ui/icons/Drafts';
 
-function ChatList() {
+class ChatList extends Component {
 
-    return (
-        <div>
-            <List component="nav" aria-label="main mailbox folders">
-                <ListItem button >
-                    <ListItemIcon>
-                    <InboxIcon />
-                    </ListItemIcon>
-                    <ListItemText primary="Чат 1" />
-                </ListItem>
-                <ListItem button >
-                    <ListItemIcon>
-                    <InboxIcon />
-                    </ListItemIcon>
-                    <ListItemText primary="Чат 2" />
-                </ListItem>
-                <ListItem button >
-                    <ListItemIcon>
-                    <InboxIcon />
-                    </ListItemIcon>
-                    <ListItemText primary="Чат 3" />
-                </ListItem>
-                <ListItem button >
-                    <ListItemIcon>
-                    <InboxIcon />
-                    </ListItemIcon>
-                    <ListItemText primary="Чат 4" />
-                </ListItem>
-            </List>
-      </div>
-    )
-};
+    state = {
+        chats: ["Чат 1","Чат 2","Чат 3","Чат 4","Чат 5",]
+    }
+
+    render() {
+        const { chats = [] } = this.state;
+
+        return (
+            <div>
+                <List component="nav" aria-label="main mailbox folders">
+                {chats.map((item, index)=>(
+                     <ListItem key={index} button >
+                        <ListItemIcon>
+                            <InboxIcon />
+                        </ListItemIcon>
+                        <ListItemText primary={item} />
+                    </ListItem>
+                ))}
+                </List>
+          </div>
+        )
+    }
+}
+
 
 export {ChatList};
