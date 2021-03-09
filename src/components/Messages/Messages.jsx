@@ -1,6 +1,6 @@
 
-import {Component, Fragment} from 'react'
-import {TextField, Button, Chip} from '@material-ui/core';
+import {Component, Fragment, createRef} from 'react'
+import {TextField, Button, Chip, Paper} from '@material-ui/core';
 import './Messages.css'
 
 const USERTYPES = {
@@ -12,7 +12,7 @@ const USERTYPES = {
 function Message(props) {
     const {text, author} = props;
     return (
-        <div className="message">
+        <div className="message" align={author === USERTYPES.ROBOT ? "right" : "left" }>
             <Chip label={text} color={author === USERTYPES.USER ? 'primary' : author === USERTYPES.ROBOT ? 'secondary' : 'default'}/>
         </div>
     )
@@ -25,18 +25,24 @@ class Messages extends Component {
         message: ''
     }
 
+    messagesField =  createRef();
+
     addMessage = () => {
         this.setState({messages: [...this.state.messages, {text:this.state.message, author: USERTYPES.USER}]});
         this.setState({message: ''})
     }
     
-    componentDidUpdate(){
-        console.log("componentDidUpdate");
-        if (this.state.messages.length % 2 === 1){
+    componentDidUpdate(_, prevState){
+        if (
+            prevState.messages.length !== this.state.messages.length &&
+            this.state.messages.length % 2 === 1
+        ){
             setTimeout(()=>{
                 this.setState({messages: [...this.state.messages, {text: 'From the robot', author: USERTYPES.ROBOT}]})
             }, 1000)
         }
+
+        this.messagesField.current.scrollTop = this.messagesField.current.scrollHeight;
     }
 
     handleChange = (event) => {
@@ -44,15 +50,14 @@ class Messages extends Component {
     }
 
     render() {
-        console.log("render", this.state)
-        const { messages = [] } = this.state;
+      const { messages = [] } = this.state;
       return (
         <Fragment>
-            <div className="messages">
-                 {messages.map((item, index)=>(
-                     <Message key={index} {...item}/>
+            <Paper className="messages" ref={this.messagesField}>
+                {messages.map((item, index)=>(
+                    <Message key={index} {...item}/>
                 ))}
-             </div>
+             </Paper> 
              <TextField 
                 label="Message" 
                 variant="outlined" 
@@ -61,7 +66,7 @@ class Messages extends Component {
                 onKeyPress={(event) => { event.key === 'Enter' ? this.addMessage() : null }} 
                 onChange={this.handleChange}
             />
-             <Button onClick={this.addMessage} variant="contained">Send Message</Button>
+             <Button className="sendButton" onClick={this.addMessage} variant="contained">Send Message</Button>
              
         </Fragment>
       );
