@@ -1,8 +1,12 @@
-import {Layout} from '../Layout'
+
+import {Router} from '../Router'
+import {Header} from '../Header'
+
 function App(){
     return (
         <div id="test-id">
-            <Layout/>
+            <Header/>
+            <Router/>
         </div>
     );
 }
