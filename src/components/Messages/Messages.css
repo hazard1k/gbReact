@@ -1,3 +1,10 @@
 .message {
     padding: 5px;
 }
+
+.messages {
+    height: 400px;
+    margin: 15px 5px;
+    max-height: 400px;
+    overflow: auto;
+}

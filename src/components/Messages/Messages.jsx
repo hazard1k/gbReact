@@ -1,42 +1,62 @@
 
-import {Component, Fragment} from 'react'
-import {TextField, Button, Chip} from '@material-ui/core';
+import {Component, Fragment, createRef} from 'react'
+import {TextField, Button, Chip, Paper} from '@material-ui/core';
+import PropTypes from 'prop-types'
+
+import {connect} from 'react-redux'
+import {sendMessage} from '../../Redux/actions/messageAction'
+import { USERTYPES } from '../../Redux/constants/userTypes'
+
 import './Messages.css'
-
-const USERTYPES = {
-    USER: 'user',
-    ROBOT: 'robot',
-};
-
 
 function Message(props) {
     const {text, author} = props;
     return (
-        <div className="message">
+        <div className="message" align={author === USERTYPES.ROBOT ? "right" : "left" }>
             <Chip label={text} color={author === USERTYPES.USER ? 'primary' : author === USERTYPES.ROBOT ? 'secondary' : 'default'}/>
         </div>
     )
 };
 
-class Messages extends Component {
+class _Messages extends Component {
+
+    static propTypes = {
+        currentChat: PropTypes.string,
+        messages: PropTypes.object.isRequired,
+        sendMessage: PropTypes.func.isRequired,
+    }
 
     state = {
-        messages: [{text:'Start to chat',author:'auto generated'},{text:'Start to chat',author:'auto generated'}],
         message: ''
     }
 
-    addMessage = () => {
-        this.setState({messages: [...this.state.messages, {text:this.state.message, author: USERTYPES.USER}]});
+    messagesField =  createRef();
+
+    addMessage = (msg = '', author = '') => {
+        const {currentChat} = this.props; 
+
+        const msgToSend = msg.length ? msg : this.state.message;
+        const authorToSend = author.length ? author : USERTYPES.USER;
+        
+        msgToSend && this.props.sendMessage(msgToSend, authorToSend, currentChat)
+
         this.setState({message: ''})
     }
-    
-    componentDidUpdate(){
-        console.log("componentDidUpdate");
-        if (this.state.messages.length % 2 === 1){
+  
+    componentDidUpdate(prevProps){
+        const {currentChat} = this.props; 
+
+        if (
+            prevProps.messages[currentChat]?.length !== this.props.messages[currentChat]?.length &&
+            this.props.messages[currentChat]?.length % 2 === 1
+        ){
             setTimeout(()=>{
-                this.setState({messages: [...this.state.messages, {text: 'From the robot', author: USERTYPES.ROBOT}]})
+                this.addMessage('From the robot', USERTYPES.ROBOT)
             }, 1000)
         }
+
+        this.messagesField.current.scrollTop = this.messagesField.current.scrollHeight;
+        
     }
 
     handleChange = (event) => {
@@ -44,28 +64,46 @@ class Messages extends Component {
     }
 
     render() {
-        console.log("render", this.state)
-        const { messages = [] } = this.state;
+      const { 
+          messages = {}, 
+          currentChat : chatId,
+        } = this.props;
+      
       return (
         <Fragment>
-            <div className="messages">
-                 {messages.map((item, index)=>(
-                     <Message key={index} {...item}/>
-                ))}
-             </div>
-             <TextField 
-                label="Message" 
-                variant="outlined" 
-                size="small" 
-                value={this.state.message} 
-                onKeyPress={(event) => { event.key === 'Enter' ? this.addMessage() : null }} 
-                onChange={this.handleChange}
-            />
-             <Button onClick={this.addMessage} variant="contained">Send Message</Button>
+            {
+                this.props.currentChat && (
+                <>
+                    <Paper className="messages" ref={this.messagesField}>
+                        {messages[chatId] && messages[chatId].map((item, index)=>(
+                            <Message key={index} {...item}/>
+                        ))}
+                    </Paper> 
+                    <TextField 
+                        label="Message" 
+                        variant="outlined" 
+                        size="small" 
+                        value={this.state.message} 
+                        onKeyPress={(event) => { event.key === 'Enter' ? this.addMessage() : null }} 
+                        onChange={this.handleChange}
+                    />
+                    <Button className="sendButton" onClick={this.addMessage} variant="contained">Send Message</Button>
+                </>)
+            }
+            
+             
              
         </Fragment>
       );
     }
   }
+
+
+  const mapStateToProps = (state) => ({
+      messages: state.chat.messages,
+  });
+
+
+  const Messages = connect(mapStateToProps, {sendMessage})(_Messages);
 
 export {Messages};
