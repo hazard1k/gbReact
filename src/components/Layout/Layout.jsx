@@ -13,6 +13,11 @@ import {withRouter} from 'react-router'
       history: PropTypes.object.isRequired,
     }
 
+    currentChat = () => {
+      const {match} = this.props;
+      return parseInt(match.params.chatId, 10)
+    }
+
     render() {
       const {match} = this.props;
       console.log(match)
@@ -23,7 +28,7 @@ import {withRouter} from 'react-router'
               <ChatList />
             </Grid>
             <Grid item>
-              <Messages currentChat={match.params.chatId}></Messages>
+              <Messages currentChat={this.currentChat()}></Messages>
             </Grid>
           </Grid>
         </div>

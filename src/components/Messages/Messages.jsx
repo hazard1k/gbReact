@@ -4,16 +4,21 @@ import {TextField, Button, Chip, Paper} from '@material-ui/core';
 import PropTypes from 'prop-types'
 
 import {connect} from 'react-redux'
-import {sendMessage} from '../../Redux/actions/messageAction'
+import {sendMessage, deleteMessage} from '../../Redux/actions/messageAction'
 import { USERTYPES } from '../../Redux/constants/userTypes'
 
 import './Messages.css'
 
 function Message(props) {
-    const {text, author} = props;
+    const {id, text, author, chatId, onDelete} = props;
+    const handleDelete = () => {
+        console.log('clicked delete')
+        console.log('onDelete',onDelete)
+        onDelete(id)
+      };
     return (
         <div className="message" align={author === USERTYPES.ROBOT ? "right" : "left" }>
-            <Chip label={text} color={author === USERTYPES.USER ? 'primary' : author === USERTYPES.ROBOT ? 'secondary' : 'default'}/>
+            <Chip onDelete={handleDelete} label={text} color={author === USERTYPES.USER ? 'primary' : author === USERTYPES.ROBOT ? 'secondary' : 'default'}/>
         </div>
     )
 };
@@ -21,9 +26,10 @@ function Message(props) {
 class _Messages extends Component {
 
     static propTypes = {
-        currentChat: PropTypes.string,
+        currentChat: PropTypes.number,
         messages: PropTypes.object.isRequired,
         sendMessage: PropTypes.func.isRequired,
+        deleteMessage: PropTypes.func.isRequired,
     }
 
     state = {
@@ -43,20 +49,15 @@ class _Messages extends Component {
         this.setState({message: ''})
     }
   
-    componentDidUpdate(prevProps){
+    deleteMessage = (messageId) =>{
         const {currentChat} = this.props; 
+        this.props.deleteMessage(currentChat, messageId)
+    }
 
-        if (
-            prevProps.messages[currentChat]?.length !== this.props.messages[currentChat]?.length &&
-            this.props.messages[currentChat]?.length % 2 === 1
-        ){
-            setTimeout(()=>{
-                this.addMessage('From the robot', USERTYPES.ROBOT)
-            }, 1000)
+    componentDidUpdate(){
+        if (this.messagesField.current ){
+            this.messagesField.current.scrollTop = this.messagesField.current.scrollHeight;       
         }
-
-        this.messagesField.current.scrollTop = this.messagesField.current.scrollHeight;
-        
     }
 
     handleChange = (event) => {
@@ -75,8 +76,8 @@ class _Messages extends Component {
                 this.props.currentChat && (
                 <>
                     <Paper className="messages" ref={this.messagesField}>
-                        {messages[chatId] && messages[chatId].map((item, index)=>(
-                            <Message key={index} {...item}/>
+                        {messages[chatId] && messages[chatId].map((item)=>(
+                            <Message key={item.id} {...item} chatId={chatId} onDelete={this.deleteMessage}/>
                         ))}
                     </Paper> 
                     <TextField 
@@ -104,6 +105,6 @@ class _Messages extends Component {
   });
 
 
-  const Messages = connect(mapStateToProps, {sendMessage})(_Messages);
+  const Messages = connect(mapStateToProps, {sendMessage, deleteMessage})(_Messages);
 
 export {Messages};
