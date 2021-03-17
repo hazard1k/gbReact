@@ -4,8 +4,8 @@ import AppBar from '@material-ui/core/AppBar';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import MailIcon from '@material-ui/icons/Mail';
 import {Toolbar, IconButton} from '@material-ui/core';
-import {NavLink} from 'react-router-dom'
 import {connect} from 'react-redux'
+import { push } from 'connected-react-router'
 import PropTypes from 'prop-types'
 
 
@@ -14,23 +14,21 @@ class _Header extends Component{
         nickName: PropTypes.string,
     }
 
+    
     render() {
         return (
             <div>
                 <AppBar position="static">
                     <Toolbar>
                         <IconButton
-                        component={NavLink}
-                        to="/"
-                        color="inherit"
+                            color="inherit"
+                            onClick={() => {this.props.push('/');}}
                         >
-                        <MailIcon />
+                            <MailIcon  />
                         </IconButton>
-                        <IconButton
-                        // onClick={handleMenu}
-                        component={NavLink}
-                        to="/profile"
-                        color="inherit"
+                        <IconButton                     
+                            onClick={() => {this.props.push('/profile');}}
+                            color="inherit"
                         >
                             <AccountCircle />
                         </IconButton>
@@ -47,7 +45,7 @@ const mapStateToProps = (state) => ({
 });
 
 
-const Header = connect(mapStateToProps, {})(_Header);
+const Header = connect(mapStateToProps, {push})(_Header);
 
 
 export {Header};

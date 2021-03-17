@@ -1,12 +1,14 @@
 
 import {Component} from 'react'
-import {TextField, Button, List, ListItem, ListItemIcon, ListItemText} from '@material-ui/core';
+import {TextField, Button, List, ListItem, ListItemIcon, ListItemText, ListItemSecondaryAction,IconButton} from '@material-ui/core';
 import InboxIcon from '@material-ui/icons/Inbox';
+import DeleteIcon from '@material-ui/icons/Delete';
+import { push } from 'connected-react-router'
 import {NavLink} from 'react-router-dom'
 import PropTypes from 'prop-types'
 
 import {connect} from 'react-redux'
-import {addChat as addChatToStore} from '../../Redux/actions/chatAction'
+import {addChat as addChatToStore, deleteChat} from '../../Redux/actions/chatAction'
 
 class _ChatList extends Component {
 
@@ -14,6 +16,7 @@ class _ChatList extends Component {
     static propTypes = {
         rooms: PropTypes.array.isRequired,
         addChatToStore: PropTypes.func.isRequired,
+        deleteChat: PropTypes.func.isRequired,
     }
 
     state = {
@@ -22,9 +25,6 @@ class _ChatList extends Component {
 
     addChat = () => {
         this.props.addChatToStore(this.state.chatName)
-        //this.setState({chats: [...this.state.chats, this.state.chatName]});
-
-        //this.setState({messages: [...this.state.messages, {text:this.state.message, author: USERTYPES.USER}]});
         this.setState({chatName: ''})
     }
 
@@ -32,18 +32,27 @@ class _ChatList extends Component {
         this.setState({chatName: event.target.value})
     }
     
-    render() {
-      //  const { chats = [] } = this.state;
+    handleDelete = (chatId) => {
+        console.log("delete chat clicked",chatId)
+        this.props.deleteChat(chatId);
+        this.props.push('/')
+    }
 
+    render() {
         return (
             <div>
                 <List component="nav" aria-label="main mailbox folders">
-                {this.props.rooms.map((item, index)=>(
-                    <ListItem key={index} to={`/chat/${index}`} button component={NavLink} activeClassName="Mui-selected">
+                {this.props.rooms.map((item)=>(
+                    <ListItem key={item.id} to={`/chat/${item.id}`} button component={NavLink} activeClassName="Mui-selected">
                         <ListItemIcon>
                             <InboxIcon />
                         </ListItemIcon>
-                        <ListItemText primary={item} />
+                        <ListItemText primary={item.name} />
+                        <ListItemSecondaryAction>
+                            <IconButton edge="end" aria-label="delete" onClick={() => { this.handleDelete(item.id) }}>
+                                <DeleteIcon />
+                            </IconButton>
+                        </ListItemSecondaryAction>
                     </ListItem>
                 ))}
                 </List>
@@ -68,6 +77,6 @@ const mapStateToProps = (state) => ({
 });
 
 
-const ChatList = connect(mapStateToProps, {addChatToStore})(_ChatList);
+const ChatList = connect(mapStateToProps, {addChatToStore, deleteChat, push})(_ChatList);
 
 export {ChatList};
